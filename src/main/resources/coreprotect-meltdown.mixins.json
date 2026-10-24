@@ -1,0 +1,27 @@
+{
+  "required": true,
+  "minVersion": "0.8.7",
+  "package": "kr.harusarri.coreprotectmeltdown.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "RuntimeMixin",
+    "InteractionAccessor",
+    "CommandBootstrapMixin",
+    "CommandRouterMixin",
+    "CommandRegistrationMixin",
+    "NearMixin",
+    "LookupParserMixin",
+    "LookupExecutorMixin",
+    "LookupRequestAccessor",
+    "LookupStatementMixin",
+    "LookupNetworkMixin",
+    "LookupHandshakeMixin",
+    "WorldCacheAccessor",
+    "EventWorldCacheMixin",
+    "DatabaseBootstrapMixin",
+    "UserIdentityResolverMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

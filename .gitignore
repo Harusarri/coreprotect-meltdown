@@ -1,0 +1,14 @@
+build/
+original/
+patched/
+src/original/
+src/patched/
+cp_selected.java
+MANUAL.md
+*.jar
+!release/*.jar
+.gradle/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
