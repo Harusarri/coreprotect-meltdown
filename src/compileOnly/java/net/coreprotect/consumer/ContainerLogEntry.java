@@ -1,0 +1,2 @@
+package net.coreprotect.consumer;
+public record ContainerLogEntry(String world, int x, int y, int z, String actor, String action, String context, String itemData, String itemType, String containerType) {}

@@ -99,11 +99,17 @@
 
 ## 빌드 방법 (Building from Source)
 
-자체 빌드를 수행하려면 서버 라이브러리 경로와 정식으로 입수한 `coreprotect-fabric-1.3.jar` 경로를 지정하여 `build.py`를 실행합니다 (컴파일 참조용으로만 사용되며 결과물 JAR에는 포함되지 않습니다).
+본 프로젝트는 외부 비공개 바이너리 없이 즉시 빌드 가능한 표준 **Gradle** 빌드를 지원합니다 (Java 25 필요).
 
 ```bash
-python3 build.py --server /path/to/server --coreprotect /path/to/coreprotect-fabric-1.3.jar
+# Linux / macOS
+./gradlew build
+
+# Windows (PowerShell / CMD)
+.\gradlew.bat build
 ```
+
+빌드된 JAR 파일은 `build/libs/` 디렉터리에 생성됩니다.
 
 ---
 

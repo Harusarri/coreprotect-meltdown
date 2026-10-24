@@ -3,10 +3,13 @@ original/
 patched/
 src/original/
 src/patched/
+src/integration/
 cp_selected.java
+build.py
 MANUAL.md
 *.jar
 !release/*.jar
+!gradle/wrapper/gradle-wrapper.jar
 .gradle/
 .idea/
 *.iml
