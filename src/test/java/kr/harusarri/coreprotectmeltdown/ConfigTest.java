@@ -32,6 +32,10 @@ public final class ConfigTest {
             active.configure(GuardConfig.load(file));
             LimiterTest.check(!active.allow(event, 999999, true), "reenabling restores protection immediately");
             LimiterTest.check(active.config().values().get("region-per-second").equals("42"), "display uses exact file keys");
+            LimiterTest.check(!MeltdownI18n.englishMap().isEmpty(), "en_us language file loaded");
+            LimiterTest.check(MeltdownI18n.englishMap().keySet().equals(MeltdownI18n.koreanMap().keySet()), "en_us and ko_kr have identical key sets");
+            LimiterTest.check(MeltdownI18n.getByLang(MeltdownI18n.EN_US, "cmd.btn.refresh").contains("Refresh"), "en_us translation works");
+            LimiterTest.check(MeltdownI18n.getByLang(MeltdownI18n.KO_KR, "cmd.btn.refresh").contains("새로고침"), "ko_kr translation works");
         } finally { Files.deleteIfExists(file); Files.deleteIfExists(directory); }
     }
 }

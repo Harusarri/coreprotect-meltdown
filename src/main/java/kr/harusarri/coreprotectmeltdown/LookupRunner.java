@@ -47,13 +47,14 @@ public final class LookupRunner {
     public static long lastMillis() { return lastMillis; }
     public static void submit(Object executor, PlatformSender sender, String label, CoreProtectConfig config,
             CoreProtectDatabase database, Object request, boolean announce, long cooldownMillis) {
-        if (!ACTIVE.compareAndSet(false, true)) { REJECTED.incrementAndGet(); sender.sendMessage(PREFIX + "§e이미 다른 조회가 진행 중입니다. 잠시 후 다시 시도하세요."); return; }
+        String lang = MeltdownI18n.resolveLang(sender);
+        if (!ACTIVE.compareAndSet(false, true)) { REJECTED.incrementAndGet(); sender.sendMessage(PREFIX + MeltdownI18n.getByLang(lang, "lookup.busy")); return; }
         if (!CommandThrottle.beginLookup(sender, cooldownMillis)) {
-            ACTIVE.set(false); REJECTED.incrementAndGet(); sender.sendMessage(PREFIX + "§e조회 대기 시간입니다. 잠시 후 다시 시도하세요."); return;
+            ACTIVE.set(false); REJECTED.incrementAndGet(); sender.sendMessage(PREFIX + MeltdownI18n.getByLang(lang, "lookup.cooldown")); return;
         }
         try {
             Executor main = serverExecutor();
-            BufferedSender buffered = new BufferedSender(sender);
+            BufferedSender buffered = new BufferedSender(sender, lang);
             int timeout = GuardService.LIMITER.config().lookupTimeoutSeconds();
             WORKER.execute(() -> {
                 long start = System.nanoTime();
@@ -69,11 +70,11 @@ public final class LookupRunner {
                     QUERY_FAILED.set(true);
                     Throwable cause = e instanceof InvocationTargetException ? e.getCause() : e;
                     LOG.warning("Lookup failed: " + EventInfo.safe(cause == null ? e.toString() : cause.toString()));
-                    buffered.fail(PREFIX + "§c조회가 시간 제한 또는 DB 오류로 중단되었습니다. §7(§ft:1h §7등으로 범위를 좁혀 다시 시도하세요)");
+                    buffered.fail(PREFIX + MeltdownI18n.getByLang(lang, "lookup.aborted"));
                 } finally {
                     if (Boolean.TRUE.equals(QUERY_FAILED.get())) {
                         FAILED.incrementAndGet();
-                        buffered.fail(PREFIX + "§c조회가 시간 제한 또는 DB 오류로 중단되었습니다. §7(§ft:1h §7등으로 범위를 좁혀 다시 시도하세요)");
+                        buffered.fail(PREFIX + MeltdownI18n.getByLang(lang, "lookup.aborted"));
                     } else COMPLETED.incrementAndGet();
                     CURRENT_REQUEST.remove();
                     QUERY_FAILED.remove();
@@ -89,7 +90,7 @@ public final class LookupRunner {
             });
         } catch (RuntimeException e) {
             CommandThrottle.finishLookup(sender); ACTIVE.set(false); FAILED.incrementAndGet();
-            sender.sendMessage(PREFIX + "§c조회 작업을 시작하지 못했습니다.");
+            sender.sendMessage(PREFIX + MeltdownI18n.getByLang(lang, "lookup.start_failed"));
             LOG.warning(EventInfo.safe(e.toString()));
         }
     }
@@ -237,14 +238,18 @@ public final class LookupRunner {
     public static final class BufferedSender implements PlatformSender {
         public final PlatformSender original;
         public final boolean pluginChannel;
-        private final String name, identity, world;
+        private final String name, identity, world, lang;
         private final boolean player, commandBlock, canGive;
         private final PlatformLocation location;
         private final List<Runnable> output = new ArrayList<>();
         private int bytes;
         private boolean truncated;
         BufferedSender(PlatformSender sender) {
+            this(sender, MeltdownI18n.resolveLang(sender));
+        }
+        BufferedSender(PlatformSender sender, String lang) {
             original = sender; name = sender.name(); identity = sender.identity(); world = sender.worldName();
+            this.lang = lang != null ? lang : MeltdownI18n.EN_US;
             player = sender.isPlayer(); commandBlock = sender.isCommandBlock(); location = sender.location();
             // CoreProtect 1.3 checks this while rendering item-recovery links on our worker.
             // Resolve permissions on the server thread, using the same default as CoreProtect.
@@ -274,7 +279,7 @@ public final class LookupRunner {
         void fail(String message) { output.clear(); bytes = 0; truncated = false; sendMessage(message); }
         void flush() {
             for (Runnable send : output) send.run();
-            if (truncated) original.sendMessage(PREFIX + "§e응답 크기 제한으로 일부 표시를 생략했습니다. 조회 범위를 줄이세요.");
+            if (truncated) original.sendMessage(PREFIX + MeltdownI18n.getByLang(lang, "lookup.truncated"));
         }
     }
 }
