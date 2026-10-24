@@ -4,6 +4,10 @@
   <p><strong>Keep CoreProtect fast and lag-free on busy Minecraft 26.2–26.3 Fabric servers.</strong></p>
 </div>
 
+> [!NOTE]
+> **AI-Generated Project ("AI Slop" Disclosure)**  
+> This mod's code, query optimizer, tests, and documentation were written by an AI coding assistant (**Google Antigravity**). Use at your own discretion.
+
 > [!IMPORTANT]
 > **Requires CoreProtect (Fabric Edition)**  
 > This mod is a lightweight add-on and contains **no CoreProtect code**. You must install `coreprotect-fabric-1.3.jar` (available from the official **[CoreProtect Patreon](https://www.patreon.com/coreprotect)**) alongside this mod.
